@@ -9,14 +9,21 @@ import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ProgressBar;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
 
     private Button buttonSD;
     private Switch switchUseless;
     private ConstraintLayout constraintLayout;
+    private Button buttonLB;
+    private ProgressBar progressBarLoading;
+    private TextView loadingText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +38,9 @@ public class MainActivity extends AppCompatActivity {
         buttonSD = findViewById(R.id.button_self_destruct);
         switchUseless = findViewById(R.id.switch_useless);
         constraintLayout = findViewById(R.id.constraint_layout_main);
-
+        buttonLB = findViewById(R.id.button_look_busy);
+        progressBarLoading = findViewById(R.id.progress_bar_moving);
+        loadingText = findViewById(R.id.text_loading);
     }
 
     private void setLitseners() {
@@ -95,15 +104,33 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+        buttonLB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                progressBarLoading.setVisibility(View.VISIBLE);
+                loadingText.setVisibility(View.VISIBLE);
+                switchUseless.setVisibility(View.INVISIBLE);
+                buttonSD.setVisibility(View.INVISIBLE);
+                buttonLB.setVisibility(View.INVISIBLE);
+                new CountDownTimer(5000, 1) {
+                    @Override
+                    public void onTick(long l) {
+                        progressBarLoading.setProgress((int)((5000-l)/50));
+                        loadingText.setText("Saving Planets: " + l +" remaining");
+                    }
+                    @Override
+                    public void onFinish() {
+                        progressBarLoading.setVisibility(View.INVISIBLE);
+                        loadingText.setVisibility(View.INVISIBLE);
+                        switchUseless.setVisibility(View.VISIBLE);
+                        buttonSD.setVisibility(View.VISIBLE);
+                        buttonLB.setVisibility(View.VISIBLE);
+                    }
+                }.start();
+             }
+        });
 
     }
 
-    private void changeBackgroundColor() {
-        int r = (int)(Math.random() * 256);
-        int g = (int)(Math.random() * 256);
-        int b = (int)(Math.random() * 256);
-        int color = Color.rgb(r, g, b);
-        constraintLayout.setBackgroundColor(color);
-    }
 
 }
